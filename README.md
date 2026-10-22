@@ -88,14 +88,13 @@ Installing requires **HTTPS**, so set up a domain first (see above). Over plain 
 
 When you deploy a new version, an installed app picks it up the next time it's opened online.
 
-## Running locally
+## Running on your own computer
 
-Docker isn't required. Any static file server works:
+To try the app or test changes without a server, get the code with `git clone https://github.com/norbsmaq/toothbrush-timer` (or **Code → Download ZIP** on GitHub), then either:
 
-```bash
-cd public && python3 -m http.server 8000
-# open http://localhost:8000
-```
+- **Open `public/index.html` in your browser.** Everything works except offline mode and installing as an app.
+- **Run it as on the droplet** (needs Docker Desktop): `docker compose up`, then open http://localhost.
+- **Use Python's built-in web server:** `cd public && python3 -m http.server 8000`, then open http://localhost:8000.
 
 ## Notes
 
