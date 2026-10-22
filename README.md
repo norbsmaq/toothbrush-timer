@@ -17,11 +17,15 @@ Brushing order: upper right → upper left, then lower left → lower right.
 ## Deploy to a DigitalOcean droplet
 
 1. Create an Ubuntu droplet. The cheapest size is plenty. The "Docker on Ubuntu" Marketplace image skips the Docker install.
-2. Copy this folder to the droplet:
+2. SSH into the droplet and clone this repo:
    ```bash
-   scp -r toothbrush-timer root@YOUR_DROPLET_IP:/opt/
+   git clone https://github.com/norbsmaq/toothbrush-timer /opt/toothbrush-timer
    ```
-3. On the droplet:
+   If the repo is private, cloning needs credentials. Use a
+   [deploy key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys)
+   with the SSH URL (`git@github.com:norbsmaq/toothbrush-timer.git`),
+   or a fine-grained personal access token with read-only access to this repo.
+3. Run the setup script:
    ```bash
    cd /opt/toothbrush-timer
    sudo ./setup-droplet.sh
@@ -43,7 +47,15 @@ Caddy gets and renews a Let's Encrypt certificate automatically. HTTPS is needed
 
 ### Updating
 
-After changing files, run `docker compose up -d --build`.
+To deploy the latest version from GitHub:
+
+```bash
+cd /opt/toothbrush-timer
+git pull
+docker compose up -d --build
+```
+
+`.env` is git-ignored, so your `SITE_ADDRESS` setting is kept across updates.
 
 ## Running locally
 
