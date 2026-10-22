@@ -16,6 +16,7 @@ fi
 
 [ -f .env ] || cp .env.example .env
 
-docker compose up -d --build
+docker compose build --pull
+docker compose up -d
 echo
 echo "Toothbrush Timer is running. Open http://$(curl -fsS4 ifconfig.me 2>/dev/null || hostname -I | awk '{print $1}')/"

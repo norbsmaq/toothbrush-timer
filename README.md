@@ -53,8 +53,11 @@ To deploy the latest version from GitHub:
 ```bash
 cd /opt/toothbrush-timer
 git pull
-docker compose up -d --build
+docker compose build --pull
+docker compose up -d
 ```
+
+`--pull` also fetches the latest Caddy web server image, so this picks up its security fixes. It's worth running every month or so, even when the app hasn't changed.
 
 `.env` is git-ignored, so your `SITE_ADDRESS` setting is kept across updates.
 
