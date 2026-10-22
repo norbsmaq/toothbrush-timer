@@ -22,16 +22,12 @@ Brushing order: upper right → upper left, then lower left → lower right.
    ```bash
    git clone https://github.com/norbsmaq/toothbrush-timer /opt/toothbrush-timer
    ```
-   If the repo is private, cloning needs credentials. Use a
-   [deploy key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys)
-   with the SSH URL (`git@github.com:norbsmaq/toothbrush-timer.git`),
-   or a fine-grained personal access token with read-only access to this repo.
 3. Run the setup script:
    ```bash
    cd /opt/toothbrush-timer
    sudo ./setup-droplet.sh
    ```
-   This installs Docker if needed, opens ports 80 and 443 if `ufw` is active, and starts the app. Open `http://YOUR_DROPLET_IP/`.
+   This installs Docker if needed, opens ports 80 and 443 if `ufw` is active, turns on automatic updates (see below), and starts the app. Open `http://YOUR_DROPLET_IP/`.
 
 The container restarts automatically after reboots (`restart: unless-stopped`).
 
@@ -40,26 +36,46 @@ The container restarts automatically after reboots (`restart: unless-stopped`).
 Point a DNS **A record** (e.g. `brush.example.com`) at the droplet's IP, then:
 
 ```bash
-echo "SITE_ADDRESS=brush.example.com" > .env
+sed -i 's/^SITE_ADDRESS=.*/SITE_ADDRESS=brush.example.com/' .env
 docker compose up -d
 ```
 
-Caddy gets and renews a Let's Encrypt certificate automatically. HTTPS is needed for the browser's keep-screen-awake feature. Everything else works over plain HTTP.
+Caddy gets and renews a Let's Encrypt certificate automatically. HTTPS is needed for the browser's keep-screen-awake feature and for installing the app on your phone. Everything else works over plain HTTP.
 
-### Updating
+### HSTS
 
-To deploy the latest version from GitHub:
+By default the site sends an [HSTS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security) header. It tells browsers to always use HTTPS for your domain for the next year. Browsers ignore it over plain HTTP or an IP address, so it does no harm there.
+
+If you're using a domain but might switch it back to plain HTTP later, turn it off in `.env`:
 
 ```bash
-cd /opt/toothbrush-timer
-git pull
-docker compose build --pull
-docker compose up -d
+ENABLE_HSTS=false
 ```
 
-`--pull` also fetches the latest Caddy web server image, so this picks up its security fixes. It's worth running every month or so, even when the app hasn't changed.
+Then run `docker compose up -d`. Turning it off doesn't undo HSTS in browsers that have already received it; they keep it until it expires.
 
-`.env` is git-ignored, so your `SITE_ADDRESS` setting is kept across updates.
+### Automatic updates
+
+`setup-droplet.sh` turns on three kinds of automatic updates:
+
+| What | How | When |
+| --- | --- | --- |
+| Ubuntu security updates | `unattended-upgrades` | Daily. If an update needs a reboot, the droplet reboots at 04:00 and the app starts back up on its own. |
+| Docker Engine | `unattended-upgrades`, from Docker's apt repository | Daily, along with the OS updates |
+| The app and its Caddy web server | `toothbrush-timer-update.timer` runs `update.sh` | Daily around 03:30 |
+
+`update.sh` pulls the latest code from GitHub, rebuilds on the newest Caddy image, restarts the container and removes old images. Anything pushed to `main` goes live on the next run.
+
+To update right away, run `sudo ./update.sh`. To see when the update last ran and when it runs next:
+
+```bash
+systemctl list-timers toothbrush-timer-update.timer
+journalctl -u toothbrush-timer-update.service -n 50
+```
+
+To turn off the app auto-update: `sudo systemctl disable --now toothbrush-timer-update.timer`
+
+`.env` is git-ignored, so your settings are kept across updates.
 
 ## Install on your phone
 
@@ -96,5 +112,6 @@ public/        the app (index.html, style.css, app.js, icons)
 Caddyfile      web server config
 Dockerfile     Caddy image with the app baked in
 docker-compose.yml
-setup-droplet.sh
+setup-droplet.sh   one-time droplet setup
+update.sh          pull + rebuild (run daily by a systemd timer)
 ```
