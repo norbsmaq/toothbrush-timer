@@ -1,6 +1,6 @@
 // Network-first service worker: always serves the latest version when online,
 // falls back to the cached copy so the timer still works offline.
-const CACHE = 'toothbrush-timer-v1';
+const CACHE = 'toothbrush-timer-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -11,7 +11,7 @@ const ASSETS = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-maskable-512.png',
-  '/icons/apple-touch-icon.png',
+  '/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', (event) => {
