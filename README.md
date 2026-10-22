@@ -27,32 +27,27 @@ Brushing order: upper right → upper left, then lower left → lower right.
    cd /opt/toothbrush-timer
    sudo ./setup-droplet.sh
    ```
-   This installs Docker if needed, opens ports 80 and 443 if `ufw` is active, turns on automatic updates (see below), and starts the app. Open `http://YOUR_DROPLET_IP/`.
+   The script asks for your domain name(s) and whether to enable HSTS (see below). Then it installs Docker if needed, opens ports 80 and 443 if `ufw` is active, turns on automatic updates, and starts the app. It finishes by printing the address to open.
 
 The container restarts automatically after reboots (`restart: unless-stopped`).
 
 ### HTTPS with your own domain (recommended)
 
-Point a DNS **A record** (e.g. `brush.example.com`) at the droplet's IP, then:
+Point a DNS **A record** for each domain at the droplet's IP. For example, add records for both `example.com` and `www.example.com`. Then enter the domains when `setup-droplet.sh` asks, separated by spaces or commas:
 
-```bash
-sed -i 's/^SITE_ADDRESS=.*/SITE_ADDRESS=brush.example.com/' .env
-docker compose up -d
+```
+Domains [none]: example.com www.example.com
 ```
 
-Caddy gets and renews a Let's Encrypt certificate automatically. HTTPS is needed for the browser's keep-screen-awake feature and for installing the app on your phone. Everything else works over plain HTTP.
+The script warns you if a domain doesn't point at the droplet yet. Caddy gets and renews a Let's Encrypt certificate for each domain automatically, and serves the app on all of them. HTTPS is needed for the browser's keep-screen-awake feature and for installing the app on your phone. Everything else works over plain HTTP.
+
+To change domains later, run `sudo ./setup-droplet.sh` again. It shows your current settings as defaults, so press Enter to keep any of them. Or edit `.env` directly (`SITE_ADDRESS="example.com, www.example.com"`) and run `docker compose up -d`.
 
 ### HSTS
 
 By default the site sends an [HSTS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security) header. It tells browsers to always use HTTPS for your domain for the next year. Browsers ignore it over plain HTTP or an IP address, so it does no harm there.
 
-If you're using a domain but might switch it back to plain HTTP later, turn it off in `.env`:
-
-```bash
-ENABLE_HSTS=false
-```
-
-Then run `docker compose up -d`. Turning it off doesn't undo HSTS in browsers that have already received it; they keep it until it expires.
+If you're using a domain but might switch it back to plain HTTP later, answer **n** when the setup script asks about HSTS. Or set `ENABLE_HSTS=false` in `.env` and run `docker compose up -d`. Turning it off doesn't undo HSTS in browsers that have already received it; they keep it until it expires.
 
 ### Automatic updates
 
