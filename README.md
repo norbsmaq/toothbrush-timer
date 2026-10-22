@@ -41,7 +41,9 @@ Domains [none]: example.com www.example.com
 
 The script warns you if a domain doesn't point at the droplet yet. Caddy gets and renews a Let's Encrypt certificate for each domain automatically, and serves the app on all of them. HTTPS is needed for the browser's keep-screen-awake feature and for installing the app on your phone. Everything else works over plain HTTP.
 
-To change domains later, run `sudo ./setup-droplet.sh` again. It shows your current settings as defaults, so press Enter to keep any of them. Or edit `.env` directly (`SITE_ADDRESS="example.com, www.example.com"`) and run `docker compose up -d`.
+If you list both a domain and its `www.` version, the script also offers to redirect `www.example.com` to `example.com` (keeping the rest of the address). That way everyone ends up on one address, so an installed app and its saved settings always use the same one.
+
+To change domains later, run `sudo ./setup-droplet.sh` again. It shows your current settings as defaults, so press Enter to keep any of them. Or edit `.env` directly (`SITE_ADDRESS="example.com, www.example.com"`, `REDIRECT_WWW=true`) and run `docker compose up -d`.
 
 ### HSTS
 

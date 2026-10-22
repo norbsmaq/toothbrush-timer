@@ -1,9 +1,16 @@
 # SITE_ADDRESS defaults to ":80" (plain HTTP on any IP).
-# Set it to your domain (e.g. brush.example.com) for automatic HTTPS.
+# Set it to one or more domains (e.g. "example.com, www.example.com") for automatic HTTPS.
 {$SITE_ADDRESS::80} {
 	root * /srv
 	encode zstd gzip
 	file_server
+
+	# REDIRECT_WWW=true sends www.<domain> to <domain>, keeping the path.
+	@www {
+		expression `{env.REDIRECT_WWW} == "true"`
+		vars_regexp www {host} ^www\.(.+)$
+	}
+	redir @www https://{re.www.1}{uri} permanent
 
 	header {
 		X-Content-Type-Options nosniff

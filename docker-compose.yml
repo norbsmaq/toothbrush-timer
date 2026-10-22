@@ -5,6 +5,7 @@ services:
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
       ENABLE_HSTS: ${ENABLE_HSTS:-true}
+      REDIRECT_WWW: ${REDIRECT_WWW:-false}
     ports:
       - "80:80"
       - "443:443"

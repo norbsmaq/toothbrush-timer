@@ -68,8 +68,32 @@ check_dns() {
   echo "  (If DNS isn't ready yet, Caddy keeps retrying and HTTPS starts working once it is.)"
 }
 
+# ask_yn "Question" true|false -> prints true/false; the current value is the default.
+ask_yn() {
+  local default answer
+  default=$([ "$2" = false ] && echo n || echo y)
+  while true; do
+    read -rp "$1 (y/n) [$default]: " answer
+    case "${answer:-$default}" in
+      [Yy]*) echo true; return ;;
+      [Nn]*) echo false; return ;;
+    esac
+  done
+}
+
+# Prints the www.<domain> entries whose bare <domain> is also in the list.
+www_pairs() {
+  local d all
+  IFS=', ' read -ra all <<< "$1"
+  for d in "${all[@]}"; do
+    [[ $d == www.* && " ${all[*]} " == *" ${d#www.} "* ]] && echo "$d"
+  done
+  return 0
+}
+
 site=$(get_env SITE_ADDRESS)
 hsts=$(get_env ENABLE_HSTS)
+redirect_www=$(get_env REDIRECT_WWW)
 
 if [ -t 0 ]; then
   echo "Which domain names should serve the app? Separate several with spaces or commas,"
@@ -90,19 +114,24 @@ if [ -t 0 ]; then
 
   if [ "$site" = ":80" ]; then
     hsts=false
+    redirect_www=false
   else
     check_dns "$site"
     echo
     echo "HSTS makes browsers always use HTTPS for these domains for the next year."
     echo "Recommended unless you might switch back to plain HTTP."
-    default=$([ "$hsts" = false ] && echo n || echo y)
-    while true; do
-      read -rp "Enable HSTS? (y/n) [$default]: " answer
-      case "${answer:-$default}" in
-        [Yy]*) hsts=true; break ;;
-        [Nn]*) hsts=false; break ;;
-      esac
-    done
+    hsts=$(ask_yn "Enable HSTS?" "$hsts")
+
+    pairs=$(www_pairs "$site")
+    if [ -n "$pairs" ]; then
+      # Suggest the redirect for newly added www pairs; otherwise keep the previous answer.
+      [ -n "$(www_pairs "$(get_env SITE_ADDRESS)")" ] || redirect_www=true
+      echo
+      for d in $pairs; do echo "  $d -> ${d#www.}"; done
+      redirect_www=$(ask_yn "Redirect these www addresses to the domain without www?" "$redirect_www")
+    else
+      redirect_www=false
+    fi
   fi
 
   if [ "$site" = ":80" ]; then
@@ -111,6 +140,7 @@ if [ -t 0 ]; then
     set_env SITE_ADDRESS "\"$site\""
   fi
   set_env ENABLE_HSTS "$hsts"
+  set_env REDIRECT_WWW "$redirect_www"
   echo "Saved to .env."
   echo
 else
