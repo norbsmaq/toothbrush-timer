@@ -17,7 +17,7 @@ Brushing order: upper right → upper left, then lower left → lower right.
 
 ## Deploy to a DigitalOcean droplet
 
-1. Create an Ubuntu droplet. The cheapest size is plenty. The "Docker on Ubuntu" Marketplace image skips the Docker install.
+1. Create an Ubuntu droplet. The cheapest size is plenty. The [Docker](https://marketplace.digitalocean.com/apps/docker) Marketplace image skips the Docker install.
 2. SSH into the droplet and clone this repo:
    ```bash
    git clone https://github.com/norbsmaq/toothbrush-timer /opt/toothbrush-timer
