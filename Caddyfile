@@ -1,0 +1,13 @@
+# SITE_ADDRESS defaults to ":80" (plain HTTP on any IP).
+# Set it to your domain (e.g. brush.example.com) for automatic HTTPS.
+{$SITE_ADDRESS::80} {
+	root * /srv
+	encode zstd gzip
+	file_server
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		Cache-Control "public, max-age=300"
+	}
+}

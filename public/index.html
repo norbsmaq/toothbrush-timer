@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0ea5a4">
+  <title>Toothbrush Timer</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <h1>Toothbrush Timer</h1>
+    </header>
+
+    <section class="stage">
+      <div class="diagram">
+        <svg id="teeth" viewBox="0 0 300 370" role="img" aria-label="Diagram of teeth showing brushing zones"></svg>
+      </div>
+
+      <div class="readout" aria-live="polite">
+        <div id="zoneStep" class="zone-step">&nbsp;</div>
+        <div id="zoneLabel" class="zone-label">Ready to brush</div>
+        <div id="zoneTime" class="zone-time">0:30</div>
+        <div class="bar"><div id="zoneBar" class="bar-fill"></div></div>
+        <div class="total-row">
+          <span>Total</span>
+          <span id="totalTime">2:00</span>
+        </div>
+        <div class="bar thin"><div id="totalBar" class="bar-fill total"></div></div>
+
+        <div class="controls">
+          <button id="startBtn" class="btn primary" type="button">Start</button>
+          <button id="resetBtn" class="btn" type="button">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings" id="settings">
+      <h2>Settings</h2>
+
+      <div class="field">
+        <label for="duration">Brushing time <output id="durationOut">2:00</output></label>
+        <input id="duration" type="range" min="30" max="360" step="15" value="120">
+      </div>
+
+      <fieldset class="field">
+        <legend>Zones</legend>
+        <div class="segmented" id="zones">
+          <label><input type="radio" name="zones" value="2"><span>2</span></label>
+          <label><input type="radio" name="zones" value="4" checked><span>4</span></label>
+          <label><input type="radio" name="zones" value="6"><span>6</span></label>
+          <label><input type="radio" name="zones" value="8"><span>8</span></label>
+        </div>
+        <p class="hint" id="zoneHint">2 top, 2 bottom</p>
+      </fieldset>
+
+      <div class="toggles">
+        <label class="toggle"><input type="checkbox" id="optSound" checked><span>Sound</span></label>
+        <label class="toggle"><input type="checkbox" id="optVoice"><span>Voice</span></label>
+        <label class="toggle"><input type="checkbox" id="optVibrate" checked><span>Vibrate</span></label>
+        <label class="toggle"><input type="checkbox" id="optCountdown" checked><span>3-second lead-in</span></label>
+        <label class="toggle"><input type="checkbox" id="optMirror" checked><span>Mirror view</span></label>
+      </div>
+      <p class="hint">Mirror view shows your teeth as you see them in a mirror. Turn it off for a dentist's chart view.</p>
+    </section>
+  </main>
+
+  <div id="flash" class="flash" aria-hidden="true">
+    <div class="flash-text">
+      <small id="flashSmall">Switch to</small>
+      <strong id="flashBig"></strong>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
