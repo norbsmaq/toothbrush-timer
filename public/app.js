@@ -509,4 +509,11 @@
   if (![2, 4, 6, 8].includes(settings.zones)) settings.zones = defaults.zones;
 
   applySettings();
+
+  // Offline support / installable app (service workers need HTTPS or localhost).
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
 })();

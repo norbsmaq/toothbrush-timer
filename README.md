@@ -11,6 +11,7 @@ A small, dependency-free web app that guides you through brushing your teeth zon
   - Optional spoken instructions and phone vibration
 - 3-second lead-in, pause/resume (Space key works too), and it keeps the screen awake while brushing
 - Settings are saved in the browser. Light and dark themes follow the system setting.
+- Installs on your phone's home screen as an app and works offline
 
 Brushing order: upper right → upper left, then lower left → lower right.
 
@@ -57,6 +58,17 @@ docker compose up -d --build
 
 `.env` is git-ignored, so your `SITE_ADDRESS` setting is kept across updates.
 
+## Install on your phone
+
+The app is a Progressive Web App (PWA). Once installed, it opens full-screen from your home screen and works offline.
+
+Installing requires **HTTPS**, so set up a domain first (see above). Over plain `http://IP` it still works in the browser, but it won't install.
+
+- **Android (Chrome):** open the site, then tap **⋮ → Install app** (or **Add to Home screen**).
+- **iPhone/iPad (Safari):** open the site, then tap **Share → Add to Home Screen**.
+
+When you deploy a new version, an installed app picks it up the next time it's opened online.
+
 ## Running locally
 
 Docker isn't required. Any static file server works:
@@ -75,7 +87,9 @@ cd public && python3 -m http.server 8000
 ## Files
 
 ```
-public/        the app (index.html, style.css, app.js, favicon.svg)
+public/        the app (index.html, style.css, app.js, icons)
+  manifest.webmanifest  PWA manifest
+  sw.js                 service worker (offline support)
 Caddyfile      web server config
 Dockerfile     Caddy image with the app baked in
 docker-compose.yml
