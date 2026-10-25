@@ -61,7 +61,7 @@ If you're using a domain but might switch it back to plain HTTP later, answer **
 | Docker Engine | `unattended-upgrades`, from Docker's apt repository | Daily, along with the OS updates |
 | The app and its Caddy web server | `toothbrush-timer-update.timer` runs `update.sh` | Daily around 03:30 |
 
-`update.sh` pulls the latest code from GitHub, rebuilds on the newest Caddy image, restarts the container and removes old images. Anything pushed to `main` goes live on the next run.
+`update.sh` makes the server's copy match the `main` branch on GitHub exactly, rebuilds on the newest Caddy image, restarts the container and removes old images. Anything pushed to `main` goes live on the next run. Any edits made directly to the repo's files on the server are overwritten. Your `.env` settings aren't part of the repo, so they're kept.
 
 To update right away, run `sudo ./update.sh`. To see when the update last ran and when it runs next:
 

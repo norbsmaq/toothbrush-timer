@@ -6,7 +6,7 @@ Toothbrush timer PWA. Static files in `public/`, served by Caddy in Docker. See 
 
 - **Never write the site's real domain names into the repo** (code, docs, commits, examples). Use `example.com`. The repo is public. If you need the live URL, ask the owner.
 - **Commit as** `norbsmaq <28984233+norbsmaq@users.noreply.github.com>`, never a personal email.
-- **Pushing to `main` deploys to production.** The droplet runs `update.sh` daily (git pull + rebuild). Test before pushing; don't push half-finished work to `main`.
+- **Pushing to `main` deploys to production.** The droplet runs `update.sh` daily (resets to `origin/main` + rebuild). Test before pushing; don't push half-finished work to `main`.
 - **No build step, no dependencies.** Plain HTML/CSS/JS, no frameworks, CDNs or npm packages.
 - **Content-Security-Policy** (in `Caddyfile`) allows only same-origin files: no inline `<script>`, no `style="..."` attributes, no external URLs. Setting `element.style.x` from JS is fine.
 
