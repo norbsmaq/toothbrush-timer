@@ -18,4 +18,8 @@ if [ ${#logs[@]} -eq 0 ]; then
   exit 1
 fi
 
-zcat -f "${logs[@]}" | goaccess - --log-format=CADDY "$@"
+# Caddy's JSON log format, spelled out because GoAccess's built-in CADDY format
+# doesn't match current Caddy logs in older GoAccess (e.g. 1.5 on Ubuntu 22.04).
+format='{ "ts": "%x.%^", "request": { "remote_ip": "%h", "proto": "%H", "method": "%m", "host": "%v", "uri": "%U", "headers": { "User-Agent": ["%u"], "Referer": ["%R"] }, "tls": { "cipher_suite": "%k", "proto": "%K" } }, "duration": "%T", "size": "%b", "status": "%s", "resp_headers": { "Content-Type": ["%M"] } }'
+
+zcat -f "${logs[@]}" | goaccess - --log-format="$format" --date-format=%s --time-format=%s "$@"
