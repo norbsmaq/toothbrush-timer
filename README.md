@@ -27,7 +27,7 @@ Brushing order: upper right → upper left, then lower left → lower right.
    cd /opt/toothbrush-timer
    sudo ./setup-droplet.sh
    ```
-   The script asks for your domain name(s) and whether to enable HSTS (see below). Then it installs Docker if needed, opens ports 80 and 443 if `ufw` is active, turns on automatic updates, and starts the app. It finishes by printing the address to open.
+   The script asks for your domain name(s) and whether to enable HSTS (see below). Then it installs Docker if needed, opens ports 80 and 443 if `ufw` is active, turns on automatic updates, installs GoAccess for visitor stats, and starts the app. It finishes by printing the address to open.
 
 The container restarts automatically after reboots (`restart: unless-stopped`).
 
@@ -74,6 +74,21 @@ To turn off the app auto-update: `sudo systemctl disable --now toothbrush-timer-
 
 `.env` is git-ignored, so your settings are kept across updates.
 
+### Visitor stats
+
+Caddy writes an access log for every request to `logs/access.log` in the app folder on the droplet. It starts a new file at 10 MB, compresses the old ones and deletes them after 90 days. `setup-droplet.sh` installs [GoAccess](https://goaccess.io/), which turns the logs into a stats dashboard in your terminal. Nothing is published on the website.
+
+To see the stats, SSH into the droplet and run:
+
+```bash
+cd /opt/toothbrush-timer
+sudo ./stats.sh
+```
+
+It shows visitors, pages, browsers, operating systems and referrers per day, across the current and older log files. Use the arrow keys and Tab to move around, and press `q` to quit. Extra options are passed to GoAccess. For example, `sudo ./stats.sh --ignore-crawlers` hides search engine bots.
+
+The logs include visitors' IP addresses and browser details. They stay on the droplet, readable only by root.
+
 ## Install on your phone
 
 The app is a Progressive Web App (PWA). Once installed, it opens full-screen from your home screen and works offline.
@@ -110,4 +125,6 @@ Dockerfile     Caddy image with the app baked in
 docker-compose.yml
 setup-droplet.sh   one-time droplet setup
 update.sh          pull + rebuild (run daily by a systemd timer)
+stats.sh           visitor stats from the access logs (GoAccess)
+logs/              access logs on the server (git-ignored)
 ```
