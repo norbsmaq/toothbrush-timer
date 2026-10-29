@@ -181,6 +181,10 @@ CONF
 systemctl enable --now unattended-upgrades >/dev/null 2>&1 || true
 systemctl enable docker >/dev/null 2>&1 || true
 
+# GoAccess reads the web server's access logs for visitor stats (./stats.sh).
+echo "Installing GoAccess for visitor stats..."
+apt-get install -y -q goaccess
+
 # Daily app + web server update: pulls this repo and rebuilds on the latest Caddy image.
 echo "Installing daily app update timer..."
 cat > /etc/systemd/system/toothbrush-timer-update.service <<UNIT
