@@ -1,11 +1,12 @@
 // Network-first service worker: always serves the latest version when online,
 // falls back to the cached copy so the timer still works offline.
-const CACHE = 'toothbrush-timer-v2';
+const CACHE = 'toothbrush-timer-v3';
 const ASSETS = [
   '/',
   '/index.html',
   '/style.css',
   '/app.js',
+  '/favicon.ico',
   '/favicon.svg',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
